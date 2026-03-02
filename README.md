@@ -86,7 +86,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install Python dependencies
-pip install torch torchvision opencv-python pillow numpy timm
+pip install torch torchvision opencv-python pillow numpy timm scikit-learn matplotlib
 ```
 
 ---
@@ -95,15 +95,25 @@ pip install torch torchvision opencv-python pillow numpy timm
 
 **Single file:**
 ```bash
+cd rust
 cargo run -- path/to/image_or_video.mp4
 ```
 
 **Batch evaluation:**
 ```bash
+cd rust
 cargo run -- --batch ../data 43
 ```
 
 Output columns: `Spatial | Texture | Motion | Depth | Score | Label | Decision | Outcome`
+
+**ROC curve + AUC analysis:**
+```bash
+cd python
+python roc_curve.py --data ../data --max_n 43
+```
+
+Outputs `roc_curve.png` to the `python/` directory and prints AUC + optimal threshold (Youden's J) to terminal.
 
 ---
 
@@ -113,9 +123,10 @@ Output columns: `Spatial | Texture | Motion | Depth | Score | Label | Decision |
 rust_python_inference/
 ├── rust/
 │   └── src/
-│       └── main.rs        # Rust orchestrator, fusion, decision layer
+│       └── main.rs          # Rust orchestrator, fusion, decision layer
 ├── python/
-│   └── model.py           # Four inference stages + dataset iterator
+│   ├── model.py             # Four inference stages + dataset iterator
+│   └── roc_curve.py         # ROC/AUC analysis script
 ├── Cargo.toml
 └── Cargo.lock
 ```
@@ -132,3 +143,5 @@ rust_python_inference/
 | `opencv-python` | Face detection (Haar cascade), video I/O |
 | `Pillow` | Image loading |
 | `numpy` | Frame processing |
+| `scikit-learn` | ROC curve + AUC computation |
+| `matplotlib` | ROC curve plotting |
